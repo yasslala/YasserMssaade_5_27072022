@@ -1,76 +1,89 @@
 //Je récupère l'Id du produit
-let url = (new URL(location)).searchParams;
+let url = new URL(location).searchParams;
 let produitId = url.get("id");
 console.log(produitId);
 
-
 const kanap = async () => {
-    return await fetch(`http://localhost:3000/api/products/${produitId}`)
+  return await fetch(`http://localhost:3000/api/products/${produitId}`)
     .then((response) => response.json())
     .catch((error) => {
-        alert("Error : " + error.message)
+      alert("Error : " + error.message);
     });
 };
 
-
 const affichageKanap = async () => {
-    const caracData = await kanap();
-    
-    document.querySelector(".item__img").innerHTML = `<img src="${caracData.imageUrl}" alt="${caracData.altTxt}">`;
-    document.getElementById("title").innerHTML = `${caracData.name}`;
-    document.getElementById("description").innerHTML = `${caracData.description}`;
-    const colorsList = caracData.colors;
+  const caracData = await kanap();
 
-    let options = '';
-    for (let color of colorsList) {
-       options += `<option value="${color}"> ${color}</option>`
-    }
-    
-    document.getElementById("colors").innerHTML += options
-    document.getElementById("price").innerHTML = `${caracData.price}`;
-};  
+  document.querySelector(
+    ".item__img"
+  ).innerHTML = `<img src="${caracData.imageUrl}" alt="${caracData.altTxt}">`;
+  document.getElementById("title").innerHTML = `${caracData.name}`;
+  document.getElementById("description").innerHTML = `${caracData.description}`;
+  const colorsList = caracData.colors;
+
+  let options = "";
+  for (let color of colorsList) {
+    options += `<option value="${color}"> ${color}</option>`;
+  }
+
+  document.getElementById("colors").innerHTML += options;
+  document.getElementById("price").innerHTML = `${caracData.price}`;
+};
 
 affichageKanap();
 
 const couleurProduit = document.getElementById("colors");
 const quantiteProduit = document.getElementById("quantity");
 const btnAjouter = document.getElementById("addToCart");
+const nom = document.getElementById("title");
+const prix = document.getElementById("price");
 
-
-btnAjouter.addEventListener ("click", ajouterLocalStorage);
+btnAjouter.addEventListener("click", ajouterLocalStorage);
 
 function ajouterLocalStorage() {
-    if(couleurProduit.value ===""){
-        alert("Saisissez la couleur du canapé")
-        return
-    };
-    if(quantiteProduit.value < 1){
-        alert("Saisissez au moins un canapé")
-        return
-    };
-    
-    const valeursProduit = {
-        id: produitId,
-        color: couleurProduit.value,
-        quantity: quantiteProduit.value,
-    };
+  if (couleurProduit.value === "") {
+    alert("Saisissez la couleur du canapé");
+    return;
+  }
+  if (quantiteProduit.value < 1) {
+    alert("Saisissez au moins un canapé");
+    return;
+  }
 
-    let panierExistant = JSON.parse(localStorage.getItem("panier"));
+  const valeursProduit = {
+    id: produitId,
+    color: couleurProduit.value,
+    quantity: quantiteProduit.value,
+  };
 
-    if (!panierExistant) {
-        panierExistant = [valeursProduit]
+  let panierExistant = JSON.parse(localStorage.getItem("panier"));
+
+  if (!panierExistant) {
+    panierExistant = [valeursProduit];
+  } else {
+    let getProducts = panierExistant.find(
+      (p) => p.id == valeursProduit.id && p.color == valeursProduit.color
+    );
+
+    if (getProducts) {
+      let newQuantity =
+        Number(getProducts.quantity) + Number(valeursProduit.quantity);
+      getProducts.quantity = newQuantity;
     } else {
-        panierExistant.push(valeursProduit)
+      panierExistant.push(valeursProduit);
     }
+  }
 
-    let nouveauPanier = JSON.stringify(panierExistant);
-    localStorage.setItem("panier", nouveauPanier);
-
-};
-
-
+  let nouveauPanier = JSON.stringify(panierExistant);
+  localStorage.setItem("panier", nouveauPanier);
+}
 
 /*
+
+
+
+
+
 for(let i = 0; i < produitTableau.length; i++){
             if(produitTableau[i].id === produitId && produitTableau[i].color === couleurProduit.value){
                 produitTableau += quantiteProduit.value
