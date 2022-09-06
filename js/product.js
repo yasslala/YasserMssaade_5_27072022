@@ -45,7 +45,7 @@ function ajouterLocalStorage() {
     alert("Saisissez la couleur du canapé");
     return;
   }
-  if (quantiteProduit.value < 1) {
+  if (quantiteProduit.value < 1 || quantiteProduit.value > 100) {
     alert("Saisissez au moins un canapé");
     return;
   }
