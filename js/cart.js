@@ -45,7 +45,7 @@ const afficherElementsPanier = async () => {
 
           for (let i = 0; i < supprimerUnProduit.length; i++) {
             supprimerUnProduit[i].addEventListener("click", supprimerLeProduit);
-
+            
             let idASupprimer = panierExistant[i].id;
             let couleurASupprimer = panierExistant[i].color;
 
@@ -105,17 +105,17 @@ inputFirstName.addEventListener("change", function (e) {
     let errorFirstName = document.getElementById("firstNameErrorMsg");
     errorFirstName.textContent = "Champs prénom requis";
     errorFirstName.style.color = "red";
-    e.preventDefault();
+    
   } else if (regexNomPrenomVille.test(inputFirstName.value) == false) {
     let errorFirstName = document.getElementById("firstNameErrorMsg");
     errorFirstName.textContent = "les caractères spéciaux ne sont pas acceptés";
     errorFirstName.style.color = "red";
-    e.preventDefault();
+    
   } else {
     let validFirstName = document.getElementById("firstNameErrorMsg");
     validFirstName.textContent = "Prénom valide";
     validFirstName.style.color = "white";
-    e.preventDefault();
+    
   }
 });
 
@@ -125,17 +125,17 @@ inputLastName.addEventListener("change", function (e) {
     let errorLastName = document.getElementById("lastNameErrorMsg");
     errorLastName.textContent = "Champs nom requis";
     errorLastName.style.color = "red";
-    e.preventDefault();
+    
   } else if (regexNomPrenomVille.test(inputLastName.value) == false) {
     let errorLastName = document.getElementById("lastNameErrorMsg");
     errorLastName.textContent = "les caractères spéciaux ne sont pas acceptés";
     errorLastName.style.color = "red";
-    e.preventDefault();
+    
   } else {
     let validLastName = document.getElementById("lastNameErrorMsg");
     validLastName.textContent = "Nom valide";
     validLastName.style.color = "white";
-    e.preventDefault();
+    
   }
 });
 
@@ -145,17 +145,17 @@ inputAddress.addEventListener("change", function (e) {
     let errorAdress = document.getElementById("addressErrorMsg");
     errorAdress.textContent = "Champs adresse requis";
     errorAdress.style.color = "red";
-    e.preventDefault();
+    
   } else if (regexAdressePostale.test(inputAddress.value) == false) {
     let errorAdress = document.getElementById("addressErrorMsg");
     errorAdress.textContent = "format d'adresse non valide";
     errorAdress.style.color = "red";
-    e.preventDefault();
+    
   } else {
     let validAdress = document.getElementById("addressErrorMsg");
     validAdress.textContent = "Adresse valide";
     validAdress.style.color = "white";
-    e.preventDefault();
+    
   }
 });
 
@@ -165,17 +165,17 @@ inputCity.addEventListener("change", function (e) {
     let errorCity = document.getElementById("cityErrorMsg");
     errorCity.textContent = "Champs ville requis";
     errorCity.style.color = "red";
-    e.preventDefault();
+    
   } else if (regexNomPrenomVille.test(inputCity.value) == false) {
     let errorCity = document.getElementById("cityErrorMsg");
     errorCity.textContent = "les caractères spéciaux ne sont pas acceptés";
     errorCity.style.color = "red";
-    e.preventDefault();
+    
   } else {
     let validCity = document.getElementById("cityErrorMsg");
     validCity.textContent = "Ville valide";
     validCity.style.color = "white";
-    e.preventDefault();
+    
   }
 });
 
@@ -185,23 +185,25 @@ inputEmail.addEventListener("change", function (e) {
     let errorEmail = document.getElementById("emailErrorMsg");
     errorEmail.textContent = "Champs email requis";
     errorEmail.style.color = "red";
-    e.preventDefault();
+    
   } else if (regexEmail.test(inputEmail.value) == false) {
     let errorEmail = document.getElementById("emailErrorMsg");
     errorEmail.textContent = "Adresse email non valide";
     errorEmail.style.color = "red";
-    e.preventDefault();
+    
   } else {
     let validEmail = document.getElementById("emailErrorMsg");
     validEmail.textContent = "Adresse email valide";
     validEmail.style.color = "white";
-    e.preventDefault();
+    
   }
 });
 
 const boutonCommander = document.getElementById("order");
 
 boutonCommander.addEventListener("click", (e) => {
+  e.preventDefault();
+
   if (
     regexNomPrenomVille.test(inputFirstName.value) == true ||
     regexNomPrenomVille.test(inputLastName.value) == true ||
@@ -214,7 +216,7 @@ boutonCommander.addEventListener("click", (e) => {
       idProducts.push(panierExistant[k].id);
     }
   
-    const order = {
+    const donneesClient = {
       contact: {
         firstName: inputFirstName.value,
         lastName: inputLastName.value,
@@ -227,13 +229,13 @@ boutonCommander.addEventListener("click", (e) => {
 
     const options = {
       method: "POST",
+      body: JSON.stringify(donneesClient),
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(order),
     };
-    console.log(options);
+    
 
     fetch("http://localhost:3000/api/products/order", options)
       .then((response) => response.json())

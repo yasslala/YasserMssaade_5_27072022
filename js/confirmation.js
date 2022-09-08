@@ -1,8 +1,8 @@
-// je récupère le numéro de commande a partir de l'URL
+// Récupération du numéro de commande à partir de l'URL
 let orderUrl = new URL(location).searchParams;
 let orderId = orderUrl.get("id");
 
-// Affichage du n° de commande
+// Affichage du numéro de commande
 document.getElementById("orderId").textContent = orderId;
 
 localStorage.clear();
