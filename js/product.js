@@ -11,6 +11,9 @@ const kanap = async () => {
     });
 };
 
+/**
+ * Affiche le canapé récupéré depuis son ID
+ */
 const affichageKanap = async () => {
   const caracData = await kanap();
 
@@ -59,23 +62,19 @@ function ajouterLocalStorage() {
   let panierExistant = JSON.parse(localStorage.getItem("panier"));
 
   if (!panierExistant) {
-
     alert("Votre produit a été ajouté");
     panierExistant = [valeursProduit];
-
   } else {
     let getProducts = panierExistant.find(
       (p) => p.id == valeursProduit.id && p.color == valeursProduit.color
     );
 
     if (getProducts) {
-
       alert("Votre produit a été ajouté");
       let newQuantity =
         Number(getProducts.quantity) + Number(valeursProduit.quantity);
       getProducts.quantity = newQuantity;
     } else {
-
       alert("Votre produit a été ajouté");
       panierExistant.push(valeursProduit);
     }

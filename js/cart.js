@@ -4,8 +4,10 @@ console.log(panierExistant);
 const afficherElementsPanier = async () => {
   const conteneurPanier = document.getElementById("cart__items");
 
-  if (!panierExistant /*|| panierExistant == 0*/) {
+  if (!panierExistant || panierExistant.length == 0) {
     alert("Votre panier est vide !");
+    document.querySelector(".cart__order__form").style.display = "none";
+
   } else {
     for (let valeur of panierExistant) {
       let produitsDuPanier = {
@@ -45,18 +47,21 @@ const afficherElementsPanier = async () => {
 
           for (let i = 0; i < supprimerUnProduit.length; i++) {
             supprimerUnProduit[i].addEventListener("click", supprimerLeProduit);
-            
+
             let idASupprimer = panierExistant[i].id;
             let couleurASupprimer = panierExistant[i].color;
 
             function supprimerLeProduit() {
-              panierExistant = panierExistant.filter(
-                (el) => el.id !== idASupprimer || el.color !== couleurASupprimer
-              );
 
-              localStorage.setItem("panier", JSON.stringify(panierExistant));
-              window.location.href = "cart.html";
-              //document.querySelector(".cart__item").remove();
+              if (window.confirm("Voulez-vous vraiment supprimer le produit ?")) {
+
+                panierExistant = panierExistant.filter(
+                  (el) => el.id !== idASupprimer || el.color !== couleurASupprimer
+                );
+                localStorage.setItem("panier", JSON.stringify(panierExistant));
+              window.location.reload();
+              //supprimerUnProduit.closest(".cart__item").remove();
+              }
             }
           }
 
@@ -66,13 +71,14 @@ const afficherElementsPanier = async () => {
 
           for (let j = 0; j < modifierQuantite.length; j++) {
             modifierQuantite[j].addEventListener("change", (e) => {
+              
               if (
                 modifierQuantite[j].value < 1 ||
                 modifierQuantite[j].value > 100
               ) {
                 alert("Choisissez une quantité entre 1 et 100");
               } else {
-                panierExistant[j].quantity = parseInt(e.target.value);
+                panierExistant[j].quantity = Number(e.target.value);
                 localStorage.setItem("panier", JSON.stringify(panierExistant));
               }
             });
@@ -91,117 +97,86 @@ const regexAdressePostale = new RegExp(
   "^[^.?!:;,/\\/_-]([, .:;'-]?[0-9a-zA-Zàâäéèêëïîôöùûüç])+[^.?!:;,/\\/_-]$"
 );
 
-const formulaire = document.querySelector(".cart__order__form");
-
 let inputFirstName = document.getElementById("firstName");
 let inputLastName = document.getElementById("lastName");
 let inputAddress = document.getElementById("address");
 let inputCity = document.getElementById("city");
 let inputEmail = document.getElementById("email");
 
-//-------------------------------Prénom----------------------------//
-inputFirstName.addEventListener("change", function (e) {
-  if (inputFirstName.value == "") {
-    let errorFirstName = document.getElementById("firstNameErrorMsg");
-    errorFirstName.textContent = "Champs prénom requis";
-    errorFirstName.style.color = "red";
-    
-  } else if (regexNomPrenomVille.test(inputFirstName.value) == false) {
-    let errorFirstName = document.getElementById("firstNameErrorMsg");
-    errorFirstName.textContent = "les caractères spéciaux ne sont pas acceptés";
-    errorFirstName.style.color = "red";
-    
+/**
+ * 
+ * @param {HTMLInputElement} elementHtml 
+ * @param {String} idErreur 
+ * @param {String} messageErreur 
+ */
+ function verificationNomPrenom(elementHtml, idErreur, messageErreur) {
+  if (elementHtml.value == "") {
+    let errorLastName = document.getElementById(idErreur);
+    errorLastName.textContent = "Champ requis";
+    errorLastName.style.color = "red";
+  } else if (regexNomPrenomVille.test(elementHtml.value) == false) {
+    let errorLastName = document.getElementById(idErreur);
+    errorLastName.textContent = messageErreur;
+    errorLastName.style.color = "red";
   } else {
-    let validFirstName = document.getElementById("firstNameErrorMsg");
-    validFirstName.textContent = "Prénom valide";
-    validFirstName.style.color = "white";
-    
+    let validLastName = document.getElementById(idErreur);
+    validLastName.textContent = "Champ valide";
+    validLastName.style.color = "white";
   }
+}
+
+//-------------------------------Prénom----------------------------//
+inputFirstName.addEventListener("change", function () {
+  verificationNomPrenom(inputFirstName, "firstNameErrorMsg", "les caractères spéciaux ne sont pas acceptés")
 });
 
 //--------------------------------Nom----------------------------//
-inputLastName.addEventListener("change", function (e) {
-  if (inputLastName.value == "") {
-    let errorLastName = document.getElementById("lastNameErrorMsg");
-    errorLastName.textContent = "Champs nom requis";
-    errorLastName.style.color = "red";
-    
-  } else if (regexNomPrenomVille.test(inputLastName.value) == false) {
-    let errorLastName = document.getElementById("lastNameErrorMsg");
-    errorLastName.textContent = "les caractères spéciaux ne sont pas acceptés";
-    errorLastName.style.color = "red";
-    
-  } else {
-    let validLastName = document.getElementById("lastNameErrorMsg");
-    validLastName.textContent = "Nom valide";
-    validLastName.style.color = "white";
-    
-  }
+inputLastName.addEventListener("change", function () {
+  verificationNomPrenom(inputLastName, "lastNameErrorMsg", "les caractères spéciaux ne sont pas acceptés")
 });
 
 //------------------------------Adresse--------------------------//
-inputAddress.addEventListener("change", function (e) {
+inputAddress.addEventListener("change", function () {
   if (inputAddress.value == "") {
     let errorAdress = document.getElementById("addressErrorMsg");
-    errorAdress.textContent = "Champs adresse requis";
+    errorAdress.textContent = "Champs requis";
     errorAdress.style.color = "red";
-    
   } else if (regexAdressePostale.test(inputAddress.value) == false) {
     let errorAdress = document.getElementById("addressErrorMsg");
     errorAdress.textContent = "format d'adresse non valide";
     errorAdress.style.color = "red";
-    
   } else {
     let validAdress = document.getElementById("addressErrorMsg");
     validAdress.textContent = "Adresse valide";
     validAdress.style.color = "white";
-    
   }
 });
 
 //--------------------------------Ville-----------------------------//
-inputCity.addEventListener("change", function (e) {
-  if (inputCity.value == "") {
-    let errorCity = document.getElementById("cityErrorMsg");
-    errorCity.textContent = "Champs ville requis";
-    errorCity.style.color = "red";
-    
-  } else if (regexNomPrenomVille.test(inputCity.value) == false) {
-    let errorCity = document.getElementById("cityErrorMsg");
-    errorCity.textContent = "les caractères spéciaux ne sont pas acceptés";
-    errorCity.style.color = "red";
-    
-  } else {
-    let validCity = document.getElementById("cityErrorMsg");
-    validCity.textContent = "Ville valide";
-    validCity.style.color = "white";
-    
-  }
+inputCity.addEventListener("change", function () {
+  verificationNomPrenom(inputCity, "cityErrorMsg", "les caractères spéciaux ne sont pas acceptés")
 });
 
 //------------------------------Email--------------------------------//
-inputEmail.addEventListener("change", function (e) {
+inputEmail.addEventListener("change", function () {
   if (inputEmail.value == "") {
     let errorEmail = document.getElementById("emailErrorMsg");
-    errorEmail.textContent = "Champs email requis";
+    errorEmail.textContent = "Champs requis";
     errorEmail.style.color = "red";
-    
   } else if (regexEmail.test(inputEmail.value) == false) {
     let errorEmail = document.getElementById("emailErrorMsg");
     errorEmail.textContent = "Adresse email non valide";
     errorEmail.style.color = "red";
-    
   } else {
     let validEmail = document.getElementById("emailErrorMsg");
     validEmail.textContent = "Adresse email valide";
     validEmail.style.color = "white";
-    
   }
 });
 
-const boutonCommander = document.getElementById("order");
+const formulaire = document.querySelector(".cart__order__form");
 
-boutonCommander.addEventListener("click", (e) => {
+formulaire.addEventListener("submit", (e) => {
   e.preventDefault();
 
   if (
@@ -215,7 +190,7 @@ boutonCommander.addEventListener("click", (e) => {
     for (let k = 0; k < panierExistant.length; k++) {
       idProducts.push(panierExistant[k].id);
     }
-  
+
     const donneesClient = {
       contact: {
         firstName: inputFirstName.value,
@@ -235,7 +210,6 @@ boutonCommander.addEventListener("click", (e) => {
         "Content-Type": "application/json",
       },
     };
-    
 
     fetch("http://localhost:3000/api/products/order", options)
       .then((response) => response.json())
@@ -246,19 +220,4 @@ boutonCommander.addEventListener("click", (e) => {
 });
 
 /*
-infosClientIdProduits
-
-let lesPrix = [];
-
-          for(let k = 0; k < panierExistant.length; k++){
-
-            let prixDeChaqueProduit = value[k].price;
-            lesPrix.push(prixDeChaqueProduit)
-          }
-          console.log(lesPrix);
-          const reducer = (accumulator, currentValue) => accumulator + currentValue;
-          const montantTotal = lesPrix.reduce(reducer, 0);
-
-          document.getElementById("totalPrice").textContent = `${montantTotal}`;
-
-*/
+ */
