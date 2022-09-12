@@ -49,22 +49,23 @@ const afficherElementsPanier = async () => {
 
             let idASupprimer = panierExistant[i].id;
             let couleurASupprimer = panierExistant[i].color;
-
+            
             function supprimerLeProduit() {
               if (
                 window.confirm("Voulez-vous vraiment supprimer le produit ?")
               ) {
                 panierExistant = panierExistant.filter(
                   (el) =>
-                    el.id !== idASupprimer || el.color !== couleurASupprimer
-                );
+                   el.id !== idASupprimer || el.color !== couleurASupprimer
+                  );
+
                 localStorage.setItem("panier", JSON.stringify(panierExistant));
                 window.location.reload();
                 //supprimerUnProduit.closest(".cart__item").remove();
               }
             }
           }
-
+          
           //Modifier la quantité des produits
           //const produits = document.querySelectorAll(".cart__item");
           const modifierQuantite = document.querySelectorAll(".itemQuantity");
@@ -98,7 +99,7 @@ const afficherElementsPanier = async () => {
             quantiteTousLesProduits;
           document.getElementById("totalPrice").textContent =
             prixTousLesProduits;
-            console.log(prixUnTypeDeProduit);
+          console.log(prixUnTypeDeProduit);
         });
     }
   }
@@ -252,4 +253,8 @@ formulaire.addEventListener("submit", (e) => {
               //prixUnProduitQuantite = quantiteUnProduit * prixUnProduit;
               //prixTousLesProduits += prixUnProduit;
               //tousLesPrix.push(prixUnProduitQuantite)
+
+      
+
+              
  */

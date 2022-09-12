@@ -9,7 +9,6 @@ const fetchKanap = async () => {
 
 const affichageCanape = async () => {
   const dataCanape = await fetchKanap();
-  console.log(dataCanape);
 
   // Ce tableau va contenir tous les éléments HTML des canapés
   let cartesHtml = [];
