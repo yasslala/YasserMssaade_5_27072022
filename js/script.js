@@ -1,3 +1,4 @@
+//Récupération des produits depuis l'API
 const fetchKanap = async () => {
   return await fetch("http://localhost:3000/api/products")
     .then((response) => response.json())

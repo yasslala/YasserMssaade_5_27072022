@@ -1,7 +1,6 @@
 //Je récupère l'Id du produit
 let url = new URL(location).searchParams;
 let produitId = url.get("id");
-console.log(produitId);
 
 const kanap = async () => {
   return await fetch(`http://localhost:3000/api/products/${produitId}`)
@@ -11,9 +10,8 @@ const kanap = async () => {
     });
 };
 
-/**
- * Affiche le canapé récupéré depuis son ID
- */
+
+//Affiche le canapé récupéré depuis son ID
 const affichageKanap = async () => {
   const caracData = await kanap();
 
@@ -83,30 +81,3 @@ function ajouterLocalStorage() {
   let nouveauPanier = JSON.stringify(panierExistant);
   localStorage.setItem("panier", nouveauPanier);
 }
-
-/*
-
-
-
-
-
-for(let i = 0; i < produitTableau.length; i++){
-            if(produitTableau[i].id === produitId && produitTableau[i].color === couleurProduit.value){
-                produitTableau += quantiteProduit.value
-            }
-        };
-
-produitTableau = [];
-        produitTableau.push(valeursProduit);
-        let stockage = JSON.stringify(valeursProduit);
-        localStorage.setItem("objet", stockage);
-
-
-
-
-
-
-let produitTableau = JSON.parse(localStorage.getItem("valeursProduit"));
-
-
-*/

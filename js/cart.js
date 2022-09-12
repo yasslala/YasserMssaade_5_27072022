@@ -7,7 +7,6 @@ const afficherElementsPanier = async () => {
   if (!panierExistant || panierExistant.length == 0) {
     alert("Votre panier est vide !");
     document.querySelector(".cart__order__form").style.display = "none";
-
   } else {
     for (let valeur of panierExistant) {
       let produitsDuPanier = {
@@ -52,15 +51,16 @@ const afficherElementsPanier = async () => {
             let couleurASupprimer = panierExistant[i].color;
 
             function supprimerLeProduit() {
-
-              if (window.confirm("Voulez-vous vraiment supprimer le produit ?")) {
-
+              if (
+                window.confirm("Voulez-vous vraiment supprimer le produit ?")
+              ) {
                 panierExistant = panierExistant.filter(
-                  (el) => el.id !== idASupprimer || el.color !== couleurASupprimer
+                  (el) =>
+                    el.id !== idASupprimer || el.color !== couleurASupprimer
                 );
                 localStorage.setItem("panier", JSON.stringify(panierExistant));
-              window.location.reload();
-              //supprimerUnProduit.closest(".cart__item").remove();
+                window.location.reload();
+                //supprimerUnProduit.closest(".cart__item").remove();
               }
             }
           }
@@ -71,7 +71,6 @@ const afficherElementsPanier = async () => {
 
           for (let j = 0; j < modifierQuantite.length; j++) {
             modifierQuantite[j].addEventListener("change", (e) => {
-              
               if (
                 modifierQuantite[j].value < 1 ||
                 modifierQuantite[j].value > 100
@@ -83,6 +82,23 @@ const afficherElementsPanier = async () => {
               }
             });
           }
+
+          // Prix total de la commande
+          let quantiteTousLesProduits = 0;
+          let prixTousLesProduits = 0;
+
+          for (let prod of panierExistant) {
+            quantiteUnProduit = Number(prod.quantity);
+            quantiteTousLesProduits += quantiteUnProduit;
+            prixUnTypeDeProduit = Number(prod.quantity) * Number(value.price);
+            prixTousLesProduits += prixUnTypeDeProduit;
+          }
+
+          document.getElementById("totalQuantity").textContent =
+            quantiteTousLesProduits;
+          document.getElementById("totalPrice").textContent =
+            prixTousLesProduits;
+            console.log(prixUnTypeDeProduit);
         });
     }
   }
@@ -104,12 +120,12 @@ let inputCity = document.getElementById("city");
 let inputEmail = document.getElementById("email");
 
 /**
- * 
- * @param {HTMLInputElement} elementHtml 
- * @param {String} idErreur 
- * @param {String} messageErreur 
+ *
+ * @param {HTMLInputElement} elementHtml
+ * @param {String} idErreur
+ * @param {String} messageErreur
  */
- function verificationNomPrenom(elementHtml, idErreur, messageErreur) {
+function verificationNomPrenom(elementHtml, idErreur, messageErreur) {
   if (elementHtml.value == "") {
     let errorLastName = document.getElementById(idErreur);
     errorLastName.textContent = "Champ requis";
@@ -127,12 +143,20 @@ let inputEmail = document.getElementById("email");
 
 //-------------------------------Prénom----------------------------//
 inputFirstName.addEventListener("change", function () {
-  verificationNomPrenom(inputFirstName, "firstNameErrorMsg", "les caractères spéciaux ne sont pas acceptés")
+  verificationNomPrenom(
+    inputFirstName,
+    "firstNameErrorMsg",
+    "les caractères spéciaux ne sont pas acceptés"
+  );
 });
 
 //--------------------------------Nom----------------------------//
 inputLastName.addEventListener("change", function () {
-  verificationNomPrenom(inputLastName, "lastNameErrorMsg", "les caractères spéciaux ne sont pas acceptés")
+  verificationNomPrenom(
+    inputLastName,
+    "lastNameErrorMsg",
+    "les caractères spéciaux ne sont pas acceptés"
+  );
 });
 
 //------------------------------Adresse--------------------------//
@@ -154,7 +178,11 @@ inputAddress.addEventListener("change", function () {
 
 //--------------------------------Ville-----------------------------//
 inputCity.addEventListener("change", function () {
-  verificationNomPrenom(inputCity, "cityErrorMsg", "les caractères spéciaux ne sont pas acceptés")
+  verificationNomPrenom(
+    inputCity,
+    "cityErrorMsg",
+    "les caractères spéciaux ne sont pas acceptés"
+  );
 });
 
 //------------------------------Email--------------------------------//
@@ -220,4 +248,8 @@ formulaire.addEventListener("submit", (e) => {
 });
 
 /*
+              //prixUnProduit = Number(value.price);
+              //prixUnProduitQuantite = quantiteUnProduit * prixUnProduit;
+              //prixTousLesProduits += prixUnProduit;
+              //tousLesPrix.push(prixUnProduitQuantite)
  */
