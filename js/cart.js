@@ -58,10 +58,10 @@ const afficherElementsPanier = async () => {
                   (el) =>
                    el.id !== idASupprimer || el.color !== couleurASupprimer
                   );
-
+                  
                 localStorage.setItem("panier", JSON.stringify(panierExistant));
                 window.location.reload();
-                //supprimerUnProduit.closest(".cart__item").remove();
+                //supprimerUnProduit[i].closest(".cart__item").remove();
               }
             }
           }
