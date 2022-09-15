@@ -49,7 +49,7 @@ function ajouterLocalStorage() {
   }
   //Si la quantité est < à 1 ou > à 100 le message s'affiche
   if (quantiteProduit.value < 1 || quantiteProduit.value > 100) {
-    alert("Saisissez au moins un canapé");
+    alert("Saisissez une quantité entre 1 et 100");
     return;
   }
 

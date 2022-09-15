@@ -108,6 +108,7 @@ const afficherElementsPanier = async () => {
           for (let prod of panierExistant) {
             quantiteUnProduit = Number(prod.quantity);
             quantiteTousLesProduits += quantiteUnProduit;
+            
             prixUnTypeDeProduit = Number(prod.quantity) * Number(value.price);
             prixTousLesProduits += prixUnTypeDeProduit;
           }
@@ -117,6 +118,7 @@ const afficherElementsPanier = async () => {
           document.getElementById("totalPrice").textContent =
             prixTousLesProduits;
           console.log(prixUnTypeDeProduit);
+          console.log(prixTousLesProduits);
         });
     }
   }
@@ -253,7 +255,7 @@ formulaire.addEventListener("submit", (e) => {
       },
       products: idProducts,
     };
-    //méthode POST qui permet l'envoi
+    //méthode POST qui permet l'envoi des données
     const options = {
       method: "POST",
       body: JSON.stringify(donneesClient),
@@ -262,7 +264,7 @@ formulaire.addEventListener("submit", (e) => {
         "Content-Type": "application/json",
       },
     };
-    //On envoie pui on est redirigé vers la page de confirmation
+    //On envoie puis on est redirigé vers la page de confirmation
     fetch("http://localhost:3000/api/products/order", options)
       .then((response) => response.json())
       .then((data) => {
