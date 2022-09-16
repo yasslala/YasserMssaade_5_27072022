@@ -106,13 +106,13 @@ const afficherElementsPanier = async () => {
           let prixTousLesProduits = 0;
 
           for (let prod of panierExistant) {
-            quantiteUnProduit = Number(prod.quantity);
+            quantiteUnProduit = prod.quantity;
             quantiteTousLesProduits += quantiteUnProduit;
             
             prixUnTypeDeProduit = Number(prod.quantity) * Number(value.price);
             prixTousLesProduits += prixUnTypeDeProduit;
           }
-
+          
           document.getElementById("totalQuantity").textContent =
             quantiteTousLesProduits;
           document.getElementById("totalPrice").textContent =
