@@ -1,17 +1,18 @@
 //Récupération des données du localstorage
 let panierExistant = JSON.parse(localStorage.getItem("panier"));
-console.log(panierExistant);
 
 //Fonction générale permettant entre autres d'afficher les éléments du panier
 const afficherElementsPanier = async () => {
-  //Les produits affichés ici
+  //Tous les produits sont affichés ici
   const conteneurPanier = document.getElementById("cart__items");
 
-  //Si le panier est vide affiche ce message et retire le formulaire
+  //Si le panier est vide ce message s'affiche et le formulaire est retiré
   if (!panierExistant || panierExistant.length == 0) {
     alert("Votre panier est vide !");
     document.querySelector(".cart__order__form").style.display = "none";
   } else {
+    //Tableau qui regroupe toutes les promesses
+    const promessesProduits = [];
     //Boucle pour récupérer les produits dans le localstorage
     for (let valeur of panierExistant) {
       //Objet regroupant les éléments récupérés dans le localstorage
@@ -20,107 +21,119 @@ const afficherElementsPanier = async () => {
         couleur: valeur.color,
         quantite: valeur.quantity,
       };
+      //On ajoute toutes les promesses au tableau grâce à l'id des produits
+      promessesProduits.push(
+        fetch("http://localhost:3000/api/products/" + produitsDuPanier.id).then(
+          (response) => response.json()
+        )
+      );
+    }
+    //La constante attend toutes les promesses du tableau
+    const produitsComplets = await Promise.all(promessesProduits);
+    //Variable quantité de produits et prix de tous les produits
+    let quantiteTousLesProduits = 0;
+    let prixTousLesProduits = 0;
+    //Une fois qu'on a toutes les promesses, on peut injecter le html de tous les produits du panier
+    produitsComplets.forEach((produit, index) => {
+      //Insertion des éléments dans le HTML
+      const leHtml = `<article id="${produit._id}" class="cart__item" data-id="${produit._id}" data-color="${panierExistant[index].color}">
+      <div class="cart__item__img">
+        <img src="${produit.imageUrl}" alt="${produit.altTxt}">
+      </div>
+      <div class="cart__item__content">
+        <div class="cart__item__content__description">
+          <h2>${produit.name}</h2>
+          <p>${panierExistant[index].color}</p>
+          <p>${produit.price}€</p>
+        </div>
+        <div class="cart__item__content__settings">
+          <div class="cart__item__content__settings__quantity">
+            <p>Qté :</p>
+            <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${panierExistant[index].quantity}">
+          </div>
+          <div class="cart__item__content__settings__delete">
+            <p class="deleteItem" data-id="${produit._id}" data-color="${panierExistant[index].color}">Supprimer</p>
+          </div>
+        </div>
+      </div>
+    </article>`;
+      //On injecte le html pour chaque produit
+      conteneurPanier.innerHTML += leHtml;
+      //On obtient la quantité pour chaque produit puis la quantité totale de tous les produits du panier
+      const quantiteUnProduit = Number(panierExistant[index].quantity);
+      quantiteTousLesProduits += quantiteUnProduit;
+      //On obtient le prix d'un type de produit par rapport à sa quantité et le prix de tous les produits
+      const prixUnTypeDeProduit = quantiteUnProduit * Number(produit.price);
+      prixTousLesProduits += prixUnTypeDeProduit;
+    });
+    //On injecte dans le html la quantité de tous les produits et le prix total du panier
+    document.getElementById("totalQuantity").textContent =
+      quantiteTousLesProduits;
+    document.getElementById("totalPrice").textContent = prixTousLesProduits;
 
-      //Récupération des données de l'api pour chaque produit grâce à l'id
-      fetch("http://localhost:3000/api/products/" + produitsDuPanier.id)
-        .then((response) => response.json())
-        .then(function (value) {
-          //Insertion des des éléments dans le HTML
-          const leHtml = `<article class="cart__item" data-id="${valeur.id}" data-color="${valeur.color}">
-            <div class="cart__item__img">
-              <img src="${value.imageUrl}" alt="${value.altTxt}">
-            </div>
-            <div class="cart__item__content">
-              <div class="cart__item__content__description">
-                <h2>${value.name}</h2>
-                <p>${valeur.color}</p>
-                <p>${value.price}€</p>
-              </div>
-              <div class="cart__item__content__settings">
-                <div class="cart__item__content__settings__quantity">
-                  <p>Qté : ${valeur.quantity}</p>
-                  <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${valeur.quantity}">
-                </div>
-                <div class="cart__item__content__settings__delete">
-                  <p class="deleteItem">Supprimer</p>
-                </div>
-              </div>
-            </div>
-          </article>`;
-          conteneurPanier.innerHTML += leHtml;
+//----------------------------SUPPRIMER UN PRODUIT-------------------------//
+    //Fonction supprimer qui prend en compte l'id et la couleur du produit
+    function supprimerLeProduit(id, couleur) {
+      //Demande de confirmation avant de supprimer l'élément
+      if (window.confirm("Voulez-vous vraiment supprimer le produit ?")) {
+        //Suppression de l'élément du localstorage par id et couleur
+        panierExistant = panierExistant.filter(
+          (el) => el.id !== id || el.color !== couleur
+        );
+        //Mise à jour du localstorage
+        localStorage.setItem("panier", JSON.stringify(panierExistant));
+        //Actualisation de la page
+        window.location.reload();
+      }
+    }
+    //Constante qui permettra de supprimer chaque produit au clic
+    const supprimerUnProduit = document.querySelectorAll(".deleteItem");
+    
+    supprimerUnProduit.forEach((bouton) => {
+      //Au clic
+      bouton.addEventListener("click", () => {
+        //Variables d'un élément avec l'id et la couleur
+        let idASupprimer = bouton.getAttribute("data-id");
+        let couleurASupprimer = bouton.getAttribute("data-color");
+        //J'exécute la fonction supprimer grâce à ces deux variables
+        supprimerLeProduit(idASupprimer, couleurASupprimer);
+      });
+    });
+ //-----------------------------MODIFIER LA QUANTITE-----------------------//
+    //Bouton permettant la modification de la quantité des produits depuis le panier
+    const modifierQuantite = document.querySelectorAll(".itemQuantity");
 
-          //Bouton permettant la suppression des produits du panier
-          const supprimerUnProduit = document.querySelectorAll(".deleteItem");
+    //Boucle permettant de pouvoir modifier la quantité de chaque élément du panier
+    modifierQuantite.forEach((input, index) => {
+      input.addEventListener("change", (e) => {
+        //Affiche le message si la quantité n'est pas comprise entre 1 et 100
+        if (
+          modifierQuantite[index].value < 1 ||
+          modifierQuantite[index].value > 100
+        ) {
+          alert("Choisissez une quantité entre 1 et 100");
+          //Sinon enregistre la valeur indiquer dans l'input
+        } else {
+          panierExistant[index].quantity = Number(e.target.value);
+          localStorage.setItem("panier", JSON.stringify(panierExistant));
+          quantiteTousLesProduits = panierExistant.reduce(
+            (acc, encours) => acc + encours.quantity,
+            0
+          );
+//--------------------------------PRIX TOTAL-------------------------------//
+          let prixTotal = 0;
+          produitsComplets.forEach((produit, index) => {
+            prixTotal += produit.price * panierExistant[index].quantity;
+          });
+          prixTousLesProduits = prixTotal;
 
-          //Boucle permettant de pouvoir supprimer pour chaque élément du panier
-          for (let i = 0; i < supprimerUnProduit.length; i++) {
-            //Au clic on supprime l'élément en question
-            supprimerUnProduit[i].addEventListener("click", supprimerLeProduit);
-            //Variables d'un élément avec l'id et la couleur
-            let idASupprimer = panierExistant[i].id;
-            let couleurASupprimer = panierExistant[i].color;
-
-            function supprimerLeProduit() {
-              //Demande de confirmation avant de supprimer l'élément
-              if (
-                window.confirm("Voulez-vous vraiment supprimer le produit ?")
-              ) {
-                //Suppression de l'élément du localstorage par id
-                //et couleur
-                panierExistant = panierExistant.filter(
-                  (el) =>
-                    el.id !== idASupprimer || el.color !== couleurASupprimer
-                );
-                //Mise à jour du localstorage
-                localStorage.setItem("panier", JSON.stringify(panierExistant));
-                //Actualisation de la page
-                window.location.reload();
-                //supprimerUnProduit[i].closest(".cart__item").remove();
-              }
-            }
-          }
-
-          //Bouton permettant la modification de la quantité des produits depuis le panier
-          const modifierQuantite = document.querySelectorAll(".itemQuantity");
-
-          //Boucle permettant de pouvoir modifier la quantité de chaque élément du panier
-          for (let j = 0; j < modifierQuantite.length; j++) {
-            //On écoute le changement sur l'input
-            modifierQuantite[j].addEventListener("change", (e) => {
-              //Affiche le message si la quantité n'est pas comprise entre 1 et 100
-              if (
-                modifierQuantite[j].value < 1 ||
-                modifierQuantite[j].value > 100
-              ) {
-                alert("Choisissez une quantité entre 1 et 100");
-                //Sinon enregistre la valeur indiquer dans l'input
-              } else {
-                panierExistant[j].quantity = Number(e.target.value);
-                localStorage.setItem("panier", JSON.stringify(panierExistant));
-              }
-            });
-          }
-
-          // Prix total de la commande
-          let quantiteTousLesProduits = 0;
-          let prixTousLesProduits = 0;
-
-          for (let prod of panierExistant) {
-            quantiteUnProduit = prod.quantity;
-            quantiteTousLesProduits += quantiteUnProduit;
-            
-            prixUnTypeDeProduit = Number(prod.quantity) * Number(value.price);
-            prixTousLesProduits += prixUnTypeDeProduit;
-          }
-          
           document.getElementById("totalQuantity").textContent =
             quantiteTousLesProduits;
           document.getElementById("totalPrice").textContent =
             prixTousLesProduits;
-          console.log(prixUnTypeDeProduit);
-          console.log(prixTousLesProduits);
-        });
-    }
+        }
+      });
+    });
   }
 };
 afficherElementsPanier();
