@@ -3,7 +3,7 @@ let url = new URL(location).searchParams;
 let produitId = url.get("id");
 
 //Affiche le canapé récupéré depuis son ID
-const kanap = async () => {
+const affichageUnCanape = async () => {
   return await fetch(`http://localhost:3000/api/products/${produitId}`)
     .then((response) => response.json())
     .catch((error) => {
@@ -11,7 +11,7 @@ const kanap = async () => {
     });
 };
 const affichageKanap = async () => {
-  const caracData = await kanap();
+  const caracData = await affichageUnCanape();
 
   //Chaque donnée est injectée dans le HTML
   document.querySelector(
