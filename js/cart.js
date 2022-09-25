@@ -122,11 +122,14 @@ const afficherElementsPanier = async () => {
           );
 //--------------------------------PRIX TOTAL-------------------------------//
           let prixTotal = 0;
+          //Grâce à nos promesses et pour chacune d'elle on récupère le
+          //prix de chaque produit qu'on multiplie par la quantité du produit
           produitsComplets.forEach((produit, index) => {
             prixTotal += produit.price * panierExistant[index].quantity;
           });
+          //On obtient le prix de tous les produits
           prixTousLesProduits = prixTotal;
-
+          //On injecte le prix et la quantité de tous les produits dans le html
           document.getElementById("totalQuantity").textContent =
             quantiteTousLesProduits;
           document.getElementById("totalPrice").textContent =
