@@ -117,7 +117,7 @@ const afficherElementsPanier = async () => {
           panierExistant[index].quantity = Number(e.target.value);
           localStorage.setItem("panier", JSON.stringify(panierExistant));
           quantiteTousLesProduits = panierExistant.reduce(
-            (acc, encours) => acc + encours.quantity,
+            (acc, encours) => acc + Number(encours.quantity),
             0
           );
 //--------------------------------PRIX TOTAL-------------------------------//
@@ -248,10 +248,10 @@ formulaire.addEventListener("submit", (e) => {
   e.preventDefault();
   //Si les regex sont valide après test
   if (
-    regexNomPrenomVille.test(inputFirstName.value) == true ||
-    regexNomPrenomVille.test(inputLastName.value) == true ||
-    regexAdressePostale.test(inputAddress.value) == true ||
-    regexNomPrenomVille.test(inputCity.value) == true ||
+    regexNomPrenomVille.test(inputFirstName.value) == true &&
+    regexNomPrenomVille.test(inputLastName.value) == true &&
+    regexAdressePostale.test(inputAddress.value) == true &&
+    regexNomPrenomVille.test(inputCity.value) == true &&
     regexEmail.test(inputEmail.value) == true
   ) {
     //On créé un tableau
@@ -286,5 +286,7 @@ formulaire.addEventListener("submit", (e) => {
       .then((data) => {
         document.location.href = `confirmation.html?id=${data.orderId}`;
       });
+  }else{
+    alert("Une erreur est présente dans votre formulaire !");
   }
 });
